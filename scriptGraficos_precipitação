@@ -1,0 +1,78 @@
+library(chirps)
+library(terra)
+library(sf)
+library(stars)
+library(ggplot2)
+library(dplyr)
+library("ggplot2")
+
+#Dados Shp Estado de Minas Gerais
+mg <- st_read("/home/vitor/sensoriamento_remoto_pesquisa/shp/MG_Municipios_2022/MG_Municipios_2022.shp")
+
+#Dados das Estações automaticas do ano de 2023
+machado_mm <- read.csv("/home/vitor/sensoriamento_remoto_pesquisa/monitoramento_furnas/dados_precipitacao/machado.csv")
+passos_mm <- read.csv("/home/vitor/sensoriamento_remoto_pesquisa/monitoramento_furnas/dados_precipitacao/passos.csv")
+formiga_mm <- read.csv("/home/vitor/sensoriamento_remoto_pesquisa/monitoramento_furnas/dados_precipitacao/formiga_A524.csv")
+
+
+#Verificando o nome das colunas nos Objetos
+names(machado_mm)
+class(machado_mm)
+
+#Renomeando a data da medição
+meses <- c("Janeiro", "Fevereiro", "Março", "Abril", "Maio",
+           "Junho", "Julho", "Agosto", "Setembro", "Outubro",
+           "Novembro", "Dezembro")
+
+
+machado_mm <- machado_mm %>%
+  mutate(Data.Medicao = meses[as.POSIXlt(Data.Medicao)$mon +1])
+
+formiga_mm <- formiga_mm %>%
+  mutate(Data.Medicao = meses[as.POSIXlt(Data.Medicao)$mon +1])
+
+passos_mm <- passos_mm %>%
+  mutate(Data.Medicao = meses[as.POSIXlt(Data.Medicao)$mon +1])
+
+#Construindo Gráficos da Precipitação para o muncipio de machado
+names(machado_mm)
+# Convertendo a coluna "Data.Medicao" para um fator com ordem específica
+machado_mm$Data.Medicao <- factor(machado_mm$Data.Medicao,
+                                  levels = machado_mm$Data.Medicao)
+
+
+ggplot( data = machado_mm, aes(x = Data.Medicao, y = PRECIPITACAO.TOTAL)) +
+  geom_bar(stat = "identity", fill = "lightblue2") +
+  labs(title = "Precipitação 2023 Acumulado Mensal Estação Machado - MG 2023",
+       x = "Mês", y = "Total em Milimetros") +
+  theme_light() +
+  theme(plot.title = element_text(hjust = 0.5))  # Centralizar o título
+
+
+#Construindo Gráficos da Precipitação para o muncipio de Passos
+names(passos_mm)
+# Convertendo a coluna "Data.Medicao" para um fator com ordem específica
+passos_mm$Data.Medicao <- factor(passos_mm$Data.Medicao,
+                                  levels = passos_mm$Data.Medicao)
+
+
+ggplot( data = passos_mm, aes(x = Data.Medicao, y = PRECIPITACAO.TOTAL)) +
+  geom_bar(stat = "identity", fill = "lightblue2") +
+  labs(title = "Precipitação 2023 Acumulado Mensal Estação Passos - MG 2023",
+       x = "Mês", y = "Total em Milimetros") +
+  theme_light() +
+  theme(plot.title = element_text(hjust = 0.5))  # Centralizar o título
+
+
+# Construindo Gráficos da Precipitação para o município de Formiga
+names(formiga_mm)
+# Convertendo a coluna "Data.Medicao" para um fator com ordem específica
+formiga_mm$Data.Medicao <- factor(formiga_mm$Data.Medicao,
+                                  levels = formiga_mm$Data.Medicao)
+
+ggplot(data = formiga_mm, aes(x = Data.Medicao, y = PRECIPITACAO.TOTAL)) +
+  geom_bar(stat = "identity", fill = "lightblue2") +
+  labs(title = "Precipitação 2023 Acumulado Mensal Estação Formiga - MG 2023",
+       x = "Mês", y = "Total em Milímetros") +
+  theme_light() +
+  theme(plot.title = element_text(hjust = 0.5))  # Centralizar o título
